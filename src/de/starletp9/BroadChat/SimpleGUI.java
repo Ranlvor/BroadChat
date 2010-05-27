@@ -12,7 +12,7 @@ import javax.swing.JTextField;
 
 import org.jdom.JDOMException;
 
-public class GUI {
+public class SimpleGUI implements UI {
 
 	public static boolean debug = true;
 
@@ -21,8 +21,9 @@ public class GUI {
 	public static String JLableString = "";
 
 	public static Backend b;
+
 	public static void main(String[] args) throws IOException, JDOMException {
-		b = new Backend();
+		b = new Backend(new SimpleGUI());
 		JFrame f = new JFrame("BroadChat");
 		Box box = new Box(BoxLayout.Y_AXIS);
 		f.add(box);
@@ -33,21 +34,21 @@ public class GUI {
 		box.add(message);
 		box.add(nickname);
 		message.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 					b.sendMessage(nickname.getText(), message.getText());
 					message.setText("");
 				} catch (IOException e) {
-					JLableString = JLableString+"<br>Fehler beim Senden der Nachricht";
+					JLableString = JLableString + "<br>Fehler beim Senden der Nachricht";
 					update();
 				}
 			}
 		});
 		f.setSize(500, 600);
 		f.setVisible(true);
-		
+
 		b.sendMessage("test", "testtsettest");
 		Thread t = new Thread(new Runnable() {
 
@@ -74,14 +75,14 @@ public class GUI {
 		b.sendMessage("blablabla", "laber");
 	}
 
-	public static void MessageRecived(Message m) {
+	public void MessageRecived(Message m) {
 		if (debug)
 			System.out.println("Nachricht von " + m.nickname + " erhalten: " + m.body);
 		JLableString = JLableString + "<br>" + m.nickname + ": " + m.body;
 		update();
 	}
-	
-	public static void update(){
+
+	public static void update() {
 		chatLable.setText("<html>" + JLableString + "</html>");
 	}
 }

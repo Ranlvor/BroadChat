@@ -23,6 +23,8 @@ public class Backend {
 
 	public static final String defaultReciverIP = "255.255.255.255";
 
+	public static final boolean debug = true;
+
 	public static SAXBuilder saxBuilder = null;
 
 	public int port = defaultPort;
@@ -31,32 +33,38 @@ public class Backend {
 
 	public DatagramSocket socket = null;
 
-	public Backend() throws SocketException, UnknownHostException {
+	public UI ui;
+
+	public Backend(UI ui) throws SocketException, UnknownHostException {
 		if (saxBuilder == null)
 			saxBuilder = new SAXBuilder();
 		reciver = InetAddress.getByName(defaultReciverIP);
 		socket = new DatagramSocket(defaultPort);
+		this.ui = ui;
 	}
 
-	public Backend(int port) throws SocketException, UnknownHostException {
+	public Backend(UI ui, int port) throws SocketException, UnknownHostException {
 		if (saxBuilder == null)
 			saxBuilder = new SAXBuilder();
 		reciver = InetAddress.getByName(defaultReciverIP);
 		socket = new DatagramSocket(port);
+		this.ui = ui;
 	}
 
-	public Backend(String reciverIP) throws SocketException, UnknownHostException {
+	public Backend(UI ui, String reciverIP) throws SocketException, UnknownHostException {
 		if (saxBuilder == null)
 			saxBuilder = new SAXBuilder();
 		reciver = InetAddress.getByName(reciverIP);
 		socket = new DatagramSocket(defaultPort);
+		this.ui = ui;
 	}
 
-	public Backend(String reciverIP, int port) throws SocketException, UnknownHostException {
+	public Backend(UI ui, String reciverIP, int port) throws SocketException, UnknownHostException {
 		if (saxBuilder == null)
 			saxBuilder = new SAXBuilder();
 		reciver = InetAddress.getByName(reciverIP);
 		socket = new DatagramSocket(port);
+		this.ui = ui;
 	}
 
 	public void sendMessage(String nickname, String message) throws IOException {
@@ -67,12 +75,12 @@ public class Backend {
 
 		Document doc = new Document(root);
 		XMLOutputter out;
-		if (GUI.debug)
+		if (debug)
 			out = new XMLOutputter(Format.getPrettyFormat());
 		else
 			out = new XMLOutputter();
 		String outputString = out.outputString(doc);
-		if (GUI.debug)
+		if (debug)
 			System.out.println("Sende: " + outputString);
 		byte[] outputBytes = outputString.getBytes();
 		socket.send(new DatagramPacket(outputBytes, outputBytes.length, reciver, port));
@@ -86,7 +94,7 @@ public class Backend {
 				socket.receive(packet);
 				try {
 					String dString = new String(packet.getData()).trim();
-					if (GUI.debug)
+					if (debug)
 						System.out.println("Empfange: " + dString);
 					Document d = saxBuilder.build(new StringReader(dString));
 					Element rootElement = d.getRootElement();
@@ -94,20 +102,20 @@ public class Backend {
 						Message m = new Message();
 						m.nickname = rootElement.getChildText(BackendXMLStrings.messageNickname);
 						m.body = rootElement.getChildText(BackendXMLStrings.messageBody);
-						GUI.MessageRecived(m);
-					} else if (GUI.debug)
+						ui.MessageRecived(m);
+					} else if (debug)
 						System.out.println("Paket verworfen wegen einer zu hohen Version");
 				} catch (JDOMException e) {
 					// Nichts machen -> Paket verwerfen
-					if (GUI.debug)
+					if (debug)
 						System.out.println("Paket verworfen wegen einer JDOMException");
 				} catch (NumberFormatException e) {
 					// Nichts machen -> Paket verwerfen
-					if (GUI.debug)
+					if (debug)
 						System.out.println("Paket verworfen wegen einer NumberFormatException");
 				}
 			} catch (IOException e) {
-				if (GUI.debug)
+				if (debug)
 					System.out.println("IOException, verlasse die reciveLoop!");
 				break;
 			}
