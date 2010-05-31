@@ -14,7 +14,7 @@ import org.jdom.JDOMException;
 
 public class SimpleGUI implements UI {
 
-	public static boolean debug = true;
+	public static boolean debug = false;
 
 	public static JLabel chatLable = null;
 

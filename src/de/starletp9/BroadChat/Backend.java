@@ -23,7 +23,7 @@ public class Backend {
 
 	public static final String defaultReciverIP = "255.255.255.255";
 
-	public static final boolean debug = true;
+	public static final boolean debug = false;
 
 	public static SAXBuilder saxBuilder = null;
 
