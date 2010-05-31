@@ -49,6 +49,8 @@ public class TUI implements UI {
 						}
 					else if (zeile.startsWith("/quit"))
 						System.exit(0);
+					else
+						System.out.println("Unbekannter Befehl, um Nachrichten, die mit / beginnen zu posten, versuchen sie es mit /say...");
 				} else
 					try {
 						tui.b.sendMessage(tui.nickname, zeile);
