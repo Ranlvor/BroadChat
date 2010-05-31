@@ -2,27 +2,27 @@
 <project default="build-ALL" name="BroadChat">
 	<target name="build-TUI">
 		<mkdir dir="/tmp/BroadChat" />
-		<unjar src="${basedir}/../libs/jdom/build/jdom.jar" dest="/tmp/BroadChat" />
 		<javac srcdir="${basedir}/src" includes="de/starletp9/BroadChat/TUI.java" destdir="/tmp/BroadChat" optimize="true" debug="false" classpath="${basedir}/../libs/jdom/build/jdom.jar" />
 		<jar destfile="${basedir}/TUI.jar" filesetmanifest="mergewithoutmain">
 			<manifest>
 				<attribute name="Main-Class" value="de.starletp9.BroadChat.TUI" />
 				<attribute name="Class-Path" value="." />
 			</manifest>
-			<classfileset id="TUIClasses" dir="/tmp/BroadChat" rootclass="de.starletp9.BroadChat.TUI" />
+			<zipfileset src="${basedir}/../libs/jdom/build/jdom.jar" />
+			<fileset dir="/tmp/BroadChat" />
 		</jar>
 		<delete dir="/tmp/BroadChat" />
 	</target>
 	<target name="build-SimpleGUI">
 		<mkdir dir="/tmp/BroadChat" />
-		<unjar src="${basedir}/../libs/jdom/build/jdom.jar" dest="/tmp/BroadChat" />
 		<javac srcdir="${basedir}/src" includes="de/starletp9/BroadChat/SimpleGUI.java" destdir="/tmp/BroadChat" optimize="true" debug="false" classpath="${basedir}/../libs/jdom/build/jdom.jar" />
 		<jar destfile="${basedir}/SimpleGUI.jar" filesetmanifest="mergewithoutmain">
 			<manifest>
 				<attribute name="Main-Class" value="de.starletp9.BroadChat.SimpleGUI" />
 				<attribute name="Class-Path" value="." />
 			</manifest>
-			<classfileset id="SimpleGUIClasses" dir="/tmp/BroadChat" rootclass="de.starletp9.BroadChat.SimpleGUI" />
+			<zipfileset src="${basedir}/../libs/jdom/build/jdom.jar" />
+			<fileset dir="/tmp/BroadChat" />
 		</jar>
 		<delete dir="/tmp/BroadChat" />
 	</target>
