@@ -102,7 +102,10 @@ public class Backend {
 						Message m = new Message();
 						m.nickname = rootElement.getChildText(BackendXMLStrings.messageNickname);
 						m.body = rootElement.getChildText(BackendXMLStrings.messageBody);
-						ui.MessageRecived(m);
+						if ((m.nickname != null) && (m.body != null))
+							ui.MessageRecived(m);
+						else if (debug)
+							System.out.println("Paket verworfen, da Pakete der Version 1 einen Nickname und einen Body enthalten MÜSSEN");
 					} else if (debug)
 						System.out.println("Paket verworfen wegen einer zu hohen Version");
 				} catch (JDOMException e) {
