@@ -1,0 +1,17 @@
+XML-Namespace: http://starletp9.de/broadchat/discovery.html
+
+Mögliche Elemente:
+   clientLeft: 
+      Bedeutung: Der Client beendet sich gerade
+      Mögliche Childs: keine
+
+Besonderheiten:
+   Discoverypakete MÜSSEN ein Nicknamefeld haben.
+   Discoverypakete MÜSSEN Version 2-Pakete sein.
+
+Beispiel:
+<?xml version="1.0" encoding="UTF-8"?>
+<ChatMessage version="2">
+  <nickname>Nickname</nickname>
+  <clientLeft xmlns="http://starletp9.de/broadchat/discovery.html" />
+</ChatMessage>

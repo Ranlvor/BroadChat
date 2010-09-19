@@ -30,19 +30,18 @@ import java.net.UnknownHostException;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 public class Backend {
 
-	public static final int version = 1;
-
 	public static final int defaultPort = 1337;
 
 	public static final String defaultReciverIP = "255.255.255.255";
 
-	public static final boolean debug = false;
+	public static final boolean debug = true;
 
 	public static SAXBuilder saxBuilder = null;
 
@@ -53,6 +52,8 @@ public class Backend {
 	public DatagramSocket socket = null;
 
 	public UI ui;
+
+	private volatile boolean goOn = true;
 
 	public Backend(UI ui) throws SocketException, UnknownHostException {
 		if (saxBuilder == null)
@@ -88,7 +89,7 @@ public class Backend {
 
 	public void sendMessage(String nickname, String message) throws IOException {
 		Element root = new Element(BackendXMLStrings.messageRootElement);
-		root.setAttribute(BackendXMLStrings.version, "" + version);
+		root.setAttribute(BackendXMLStrings.version, "1");
 		root.addContent(new Element(BackendXMLStrings.messageNickname).setText(nickname));
 		root.addContent(new Element(BackendXMLStrings.messageBody).setText(message));
 
@@ -107,7 +108,7 @@ public class Backend {
 
 	public void reciveLoop() {
 		byte[] data = new byte[1500];
-		while (true) {
+		while (goOn) {
 			DatagramPacket packet = new DatagramPacket(data, data.length);
 			try {
 				socket.receive(packet);
@@ -117,7 +118,8 @@ public class Backend {
 						System.out.println("Empfange: " + dString);
 					Document d = saxBuilder.build(new StringReader(dString));
 					Element rootElement = d.getRootElement();
-					if (!(Integer.parseInt(rootElement.getAttributeValue(BackendXMLStrings.version)) > version)) {
+					int paketVersion = Integer.parseInt(rootElement.getAttributeValue(BackendXMLStrings.version));
+					if (paketVersion == 1) {
 						Message m = new Message();
 						m.nickname = rootElement.getChildText(BackendXMLStrings.messageNickname);
 						m.body = rootElement.getChildText(BackendXMLStrings.messageBody);
@@ -125,8 +127,17 @@ public class Backend {
 							ui.MessageRecived(m);
 						else if (debug)
 							System.out.println("Paket verworfen, da Pakete der Version 1 einen Nickname und einen Body enthalten MÜSSEN");
+					} else if (paketVersion == 2) {
+						Element clientLeft = rootElement.getChild(BackendXMLStrings.discoveryClientLeft, Namespace.getNamespace(BackendXMLStrings.discoveryNamespace));
+						if (clientLeft != null) {
+							String nickname = rootElement.getChildText(BackendXMLStrings.messageNickname);
+							if (nickname != null)
+								ui.discoveryClientLeft(nickname);
+							else if(debug)
+								System.out.println("Discovery-ClientLeft-Paket verworfen wegen fehlendem Nickname!");
+						}
 					} else if (debug)
-						System.out.println("Paket verworfen wegen einer zu hohen Version");
+						System.out.println("Paket verworfen wegen einer unbekannten Version");
 				} catch (JDOMException e) {
 					// Nichts machen -> Paket verwerfen
 					if (debug)
@@ -144,6 +155,29 @@ public class Backend {
 			for (int i = 0; i < data.length; i++) {
 				data[i] = 0;
 			}
+		}
+	}
+
+	public void shutdown(String nickname) {
+		Element root = new Element(BackendXMLStrings.messageRootElement);
+		root.setAttribute(BackendXMLStrings.version, "2");
+		root.addContent(new Element(BackendXMLStrings.messageNickname).setText(nickname));
+		root.addContent(new Element(BackendXMLStrings.discoveryClientLeft).setNamespace(Namespace.getNamespace(BackendXMLStrings.discoveryNamespace)));
+		Document doc = new Document(root);
+		XMLOutputter out;
+		if (debug)
+			out = new XMLOutputter(Format.getPrettyFormat());
+		else
+			out = new XMLOutputter();
+		String outputString = out.outputString(doc);
+		if (debug)
+			System.out.println("Sende: " + outputString);
+		byte[] outputBytes = outputString.getBytes();
+		goOn = false;
+		try {
+			socket.send(new DatagramPacket(outputBytes, outputBytes.length, reciver, port));
+		} catch (UnknownHostException e) {
+		} catch (IOException e) {
 		}
 	}
 }

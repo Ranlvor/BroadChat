@@ -21,6 +21,8 @@ package de.starletp9.BroadChat;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 
 import javax.swing.Box;
@@ -31,13 +33,13 @@ import javax.swing.JTextField;
 
 import org.jdom.JDOMException;
 
-public class SimpleGUI implements UI {
+public class SimpleGUI extends UI {
 
 	public static boolean debug = false;
 
 	public static JLabel chatLable = null;
 
-	public static String JLableString = "";
+	public static StringBuilder JLableString = new StringBuilder();
 
 	public static Backend b;
 
@@ -60,15 +62,46 @@ public class SimpleGUI implements UI {
 					b.sendMessage(nickname.getText(), message.getText());
 					message.setText("");
 				} catch (IOException e) {
-					JLableString = JLableString + "<br>Fehler beim Senden der Nachricht";
+					JLableString.append("<br>Fehler beim Senden der Nachricht");
 					update();
 				}
 			}
 		});
 		f.setSize(500, 600);
-		f.setVisible(true);
+		f.addWindowListener(new WindowListener() {
 
-		b.sendMessage("test", "testtsettest");
+			@Override
+			public void windowOpened(WindowEvent arg0) {
+			}
+
+			@Override
+			public void windowIconified(WindowEvent arg0) {
+			}
+
+			@Override
+			public void windowDeiconified(WindowEvent arg0) {
+			}
+
+			@Override
+			public void windowDeactivated(WindowEvent arg0) {
+			}
+
+			@Override
+			public void windowClosing(WindowEvent arg0) {
+				b.shutdown(nickname.getText());
+				System.exit(0);
+			}
+
+			@Override
+			public void windowClosed(WindowEvent arg0) {
+
+			}
+
+			@Override
+			public void windowActivated(WindowEvent arg0) {
+			}
+		});
+		f.setVisible(true);
 		Thread t = new Thread(new Runnable() {
 
 			@Override
@@ -76,32 +109,24 @@ public class SimpleGUI implements UI {
 				b.reciveLoop();
 			}
 		});
+		t.setName("Backend");
 		t.setDaemon(true);
 		t.start();
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		b.sendMessage("bla", "testtsettesttest");
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		b.sendMessage("blablabla", "laber");
 	}
 
 	public void MessageRecived(Message m) {
 		if (debug)
 			System.out.println("Nachricht von " + m.nickname + " erhalten: " + m.body);
-		JLableString = JLableString + "<br>" + m.nickname + ": " + m.body;
+		JLableString.append("<br>" + m.nickname + ": " + m.body);
 		update();
 	}
 
 	public static void update() {
 		chatLable.setText("<html>" + JLableString + "</html>");
+	}
+
+	public void discoveryClientLeft(String nickname) {
+		JLableString.append("<br>" + nickname + " hat seinen Client beendet.");
+		update();
 	}
 }

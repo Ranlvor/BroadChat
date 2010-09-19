@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-public class TUI implements UI {
+public class TUI extends UI {
 	private Backend b;
 
 	private String nickname;
