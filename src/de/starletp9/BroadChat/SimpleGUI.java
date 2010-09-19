@@ -148,6 +148,7 @@ public class SimpleGUI extends UI {
 
 	public static void update() {
 		chatLable.setText("<html>" + JLableString + "</html>");
+		f.toFront();
 	}
 
 	public void discoveryClientLeft(String nickname) {
