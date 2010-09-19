@@ -92,18 +92,7 @@ public class Backend {
 		root.setAttribute(BackendXMLStrings.version, "1");
 		root.addContent(new Element(BackendXMLStrings.messageNickname).setText(nickname));
 		root.addContent(new Element(BackendXMLStrings.messageBody).setText(message));
-
-		Document doc = new Document(root);
-		XMLOutputter out;
-		if (debug)
-			out = new XMLOutputter(Format.getPrettyFormat());
-		else
-			out = new XMLOutputter();
-		String outputString = out.outputString(doc);
-		if (debug)
-			System.out.println("Sende: " + outputString);
-		byte[] outputBytes = outputString.getBytes();
-		socket.send(new DatagramPacket(outputBytes, outputBytes.length, reciver, port));
+		sendElement(root);
 	}
 
 	public void reciveLoop() {
@@ -128,13 +117,24 @@ public class Backend {
 						else if (debug)
 							System.out.println("Paket verworfen, da Pakete der Version 1 einen Nickname und einen Body enthalten MÜSSEN");
 					} else if (paketVersion == 2) {
-						Element clientLeft = rootElement.getChild(BackendXMLStrings.discoveryClientLeft, Namespace.getNamespace(BackendXMLStrings.discoveryNamespace));
-						if (clientLeft != null) {
+						Element discoveryElement = rootElement
+								.getChild(BackendXMLStrings.discoveryClientLeft, Namespace.getNamespace(BackendXMLStrings.discoveryNamespace));
+						if (discoveryElement != null) {
 							String nickname = rootElement.getChildText(BackendXMLStrings.messageNickname);
 							if (nickname != null)
 								ui.discoveryClientLeft(nickname);
-							else if(debug)
+							else if (debug)
 								System.out.println("Discovery-ClientLeft-Paket verworfen wegen fehlendem Nickname!");
+						} else {
+							discoveryElement = rootElement.getChild(BackendXMLStrings.discoveryNicknameChanged, Namespace.getNamespace(BackendXMLStrings.discoveryNamespace));
+							if (discoveryElement != null) {
+								String nickname = rootElement.getChildText(BackendXMLStrings.messageNickname);
+								String oldNickname = discoveryElement.getText();
+								if (nickname != null && oldNickname != null)
+									ui.nicknameChanged(oldNickname, nickname);
+								else if (debug)
+									System.out.println("Discovery-NicknameChanged-Paket verworfen wegen fehlendem Neuem oder Altem Nickname!");
+							}
 						}
 					} else if (debug)
 						System.out.println("Paket verworfen wegen einer unbekannten Version");
@@ -163,6 +163,20 @@ public class Backend {
 		root.setAttribute(BackendXMLStrings.version, "2");
 		root.addContent(new Element(BackendXMLStrings.messageNickname).setText(nickname));
 		root.addContent(new Element(BackendXMLStrings.discoveryClientLeft).setNamespace(Namespace.getNamespace(BackendXMLStrings.discoveryNamespace)));
+		goOn = false;
+		sendElement(root);
+	}
+
+	public void nicknameChanged(String oldNickname, String nickname) {
+		Element root = new Element(BackendXMLStrings.messageRootElement);
+		root.setAttribute(BackendXMLStrings.version, "2");
+		root.addContent(new Element(BackendXMLStrings.messageNickname).setText(nickname));
+		root.addContent(new Element(BackendXMLStrings.discoveryNicknameChanged).setNamespace(Namespace.getNamespace(BackendXMLStrings.discoveryNamespace)).setText(
+				oldNickname));
+		sendElement(root);
+	}
+
+	private void sendElement(Element root) {
 		Document doc = new Document(root);
 		XMLOutputter out;
 		if (debug)
@@ -173,7 +187,6 @@ public class Backend {
 		if (debug)
 			System.out.println("Sende: " + outputString);
 		byte[] outputBytes = outputString.getBytes();
-		goOn = false;
 		try {
 			socket.send(new DatagramPacket(outputBytes, outputBytes.length, reciver, port));
 		} catch (UnknownHostException e) {

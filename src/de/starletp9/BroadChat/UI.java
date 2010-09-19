@@ -24,4 +24,7 @@ public abstract class UI {
 
 	public void discoveryClientLeft(String nickname) {
 	}
+
+	public void nicknameChanged(String oldNickname, String newNickname) {
+	}
 }

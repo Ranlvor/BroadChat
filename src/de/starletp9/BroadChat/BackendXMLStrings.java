@@ -31,4 +31,6 @@ public class BackendXMLStrings {
 	public static final String discoveryClientLeft = "clientLeft";
 
 	public static final String discoveryNamespace = "http://starletp9.de/broadchat/discovery.html";
+	
+	public static final String discoveryNicknameChanged = "nicknameChanged";
 }

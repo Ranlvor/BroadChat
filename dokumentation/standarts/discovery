@@ -2,12 +2,17 @@ XML-Namespace: http://starletp9.de/broadchat/discovery.html
 
 Mögliche Elemente:
    clientLeft: 
-      Bedeutung: Der Client beendet sich gerade
-      Mögliche Childs: keine
+      Bedeutung:       Der Client beendet sich gerade
+
+   nicknameChanged:
+      Bedeutung:       Der Nickname des Clients wurde geändert, das Nicknamefeld 
+                       enthällt bereits den neuen Namen.
+      Inhalt:          Der alte Nickname
 
 Besonderheiten:
    Discoverypakete MÜSSEN ein Nicknamefeld haben.
    Discoverypakete MÜSSEN Version 2-Pakete sein.
+   Ein Paket darf nur ein Discoveryelement enthalten.
 
 Beispiel:
 <?xml version="1.0" encoding="UTF-8"?>
