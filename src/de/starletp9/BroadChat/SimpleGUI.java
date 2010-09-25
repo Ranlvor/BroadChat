@@ -31,6 +31,9 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 
 import org.jdom.JDOMException;
@@ -49,13 +52,19 @@ public class SimpleGUI extends UI {
 
 	public static JFrame f;
 
+	public static JScrollPane scrollPane;
+
 	public static void main(String[] args) throws IOException, JDOMException {
 		b = new Backend(new SimpleGUI());
 		f = new JFrame("BroadChat");
 		Box box = new Box(BoxLayout.Y_AXIS);
-		f.add(box);
+		JSplitPane p = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		f.add(p);
 		chatLable = new JLabel();
-		box.add(chatLable);
+		scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setViewportView(chatLable);
+		p.add(scrollPane);
+		p.add(box);
 		final JTextField nickname = new JTextField(oldNickname);
 		nickname.addFocusListener(new FocusListener() {
 
@@ -121,7 +130,6 @@ public class SimpleGUI extends UI {
 
 			@Override
 			public void windowClosed(WindowEvent arg0) {
-
 			}
 
 			@Override
@@ -151,6 +159,13 @@ public class SimpleGUI extends UI {
 
 	public static void update() {
 		chatLable.setText("<html>" + JLableString + "</html>");
+		try {
+			Thread.sleep(200); // Wir warten ein wenig, damit AWT das Fenster neu berechnet und die
+			// folgenden Zeilen aktuelle Daten haben
+		} catch (InterruptedException e) {
+		}
+		JScrollBar bar = scrollPane.getVerticalScrollBar();
+		bar.setValue(bar.getMaximum());
 		f.toFront();
 	}
 
