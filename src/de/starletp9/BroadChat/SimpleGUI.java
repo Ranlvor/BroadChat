@@ -103,6 +103,7 @@ public class SimpleGUI extends UI {
 				}
 			}
 		});
+		p.setResizeWeight(1);
 		f.setSize(500, 600);
 		f.addWindowListener(new WindowListener() {
 
