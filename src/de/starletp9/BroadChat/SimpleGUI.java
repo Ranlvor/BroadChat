@@ -19,13 +19,10 @@
 
 package de.starletp9.BroadChat;
 
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
@@ -82,12 +79,18 @@ public class SimpleGUI extends UI {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				try {
-					b.sendMessage(nickname.getText(), message.getText());
-					message.setText("");
-				} catch (IOException e) {
-					JLableString.append("<br>Fehler beim Senden der Nachricht");
+				String text = message.getText();
+				if (text.equals("/clear")) {
+					JLableString.delete(0, JLableString.length());
 					update();
+				} else {
+					try {
+						b.sendMessage(nickname.getText(), text);
+						message.setText("");
+					} catch (IOException e) {
+						JLableString.append("<br>Fehler beim Senden der Nachricht");
+						update();
+					}
 				}
 			}
 		});
