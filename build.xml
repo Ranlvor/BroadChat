@@ -10,6 +10,9 @@
 			</manifest>
 			<zipfileset src="${basedir}/../libs/jdom/build/jdom.jar" />
 			<fileset dir="/tmp/BroadChat" />
+			<fileset dir="${basedir}">
+				<filename name="gpl.txt"/>
+			</fileset>
 		</jar>
 		<delete dir="/tmp/BroadChat" />
 	</target>
@@ -23,6 +26,9 @@
 			</manifest>
 			<zipfileset src="${basedir}/../libs/jdom/build/jdom.jar" />
 			<fileset dir="/tmp/BroadChat" />
+			<fileset dir="${basedir}">
+				<filename name="gpl.txt"/>
+			</fileset>
 		</jar>
 		<delete dir="/tmp/BroadChat" />
 	</target>
