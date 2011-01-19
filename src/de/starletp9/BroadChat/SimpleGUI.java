@@ -27,6 +27,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
 
+import javax.swing.JPanel;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -35,16 +36,16 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
+import javax.swing.JTabbedPane;
+
+import java.util.HashMap;
 
 import org.jdom.JDOMException;
 
 public class SimpleGUI extends UI {
+	public static JTabbedPane tabbedPane = new JTabbedPane(); 
 
-	public static boolean debug = false;
-
-	public static JLabel chatLable = null;
-
-	public static StringBuilder JLableString = new StringBuilder();
+	public static boolean debug = true;
 
 	public static Backend b;
 
@@ -52,58 +53,13 @@ public class SimpleGUI extends UI {
 
 	public static JFrame f;
 
-	public static JScrollPane scrollPane;
+	public static HashMap<String, Room> rooms = new HashMap<String, Room>();
+
+	public static JTextField nickname;
 
 	public static void main(String[] args) throws IOException, JDOMException {
 		b = new Backend(new SimpleGUI());
 		f = new JFrame("BroadChat");
-		Box box = new Box(BoxLayout.Y_AXIS);
-		JSplitPane p = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		f.add(p);
-		chatLable = new JLabel();
-		scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.setViewportView(chatLable);
-		p.add(scrollPane);
-		p.add(box);
-		final JTextField nickname = new JTextField(oldNickname);
-		nickname.addFocusListener(new FocusListener() {
-
-			@Override
-			public void focusLost(FocusEvent arg0) {
-				String newNickname = nickname.getText();
-				if (!oldNickname.equals(newNickname)) {
-					b.nicknameChanged(oldNickname, newNickname);
-					oldNickname = newNickname;
-				}
-			}
-
-			@Override
-			public void focusGained(FocusEvent arg0) {
-			}
-		});
-		final JTextField message = new JTextField();
-		box.add(message);
-		box.add(nickname);
-		message.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				String text = message.getText();
-				if (text.equals("/clear")) {
-					JLableString.delete(0, JLableString.length());
-					update();
-				} else {
-					try {
-						b.sendMessage(nickname.getText(), text);
-						message.setText("");
-					} catch (IOException e) {
-						JLableString.append("<br>Fehler beim Senden der Nachricht");
-						update();
-					}
-				}
-			}
-		});
-		p.setResizeWeight(1);
 		f.setSize(500, 600);
 		f.addWindowListener(new WindowListener() {
 
@@ -137,9 +93,46 @@ public class SimpleGUI extends UI {
 			public void windowActivated(WindowEvent arg0) {
 			}
 		});
+		nickname = new JTextField(oldNickname);
+		nickname.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				String newNickname = nickname.getText();
+				if (!oldNickname.equals(newNickname)) {
+					b.nicknameChanged(oldNickname, newNickname);
+					oldNickname = newNickname;
+				}
+			}
+
+			@Override
+			public void focusGained(FocusEvent arg0) {
+			}
+		});
+		Box newRoom = new Box(BoxLayout.Y_AXIS);
+		JPanel newRoomPanel = new JPanel();
+		newRoomPanel.add(newRoom);
+		tabbedPane.addTab("+", newRoomPanel);
+		newRoom.add(new JLabel ("              Name:              "));
+		final JTextField roomName = new JTextField();
+		newRoom.add(roomName);
+		roomName.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				createNewRoomTab(roomName.getText());
+				tabbedPane.setSelectedIndex(tabbedPane.indexOfTab(roomName.getText()));
+				roomName.setText("");
+			}
+		});
+		createNewRoomTab(BackendXMLStrings.defaultRoomName);
+		tabbedPane.setSelectedIndex(1);
+		JSplitPane p = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		p.add(tabbedPane);
+		p.add(nickname);
+		p.setResizeWeight(1);
+		f.add(p);
 		f.setVisible(true);
 		Thread t = new Thread(new Runnable() {
-
 			@Override
 			public void run() {
 				b.reciveLoop();
@@ -148,35 +141,78 @@ public class SimpleGUI extends UI {
 		t.setName("Backend");
 		t.setDaemon(true);
 		t.start();
+	}
 
+	public static Room createNewRoomTab(final String name) {
+		JFrame frame = f;
+		Room r = new Room();
+		r.name = name;
+		rooms.put(name, r);
+		JSplitPane p = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		tabbedPane.addTab(name, p);
+		JLabel chatLable = new JLabel();
+		r.chatLable = chatLable;
+		JScrollPane scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setViewportView(chatLable);
+		r.scrollPane = scrollPane;
+		p.add(scrollPane);
+
+		final JTextField message = new JTextField();
+		p.add(message);
+		message.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				String text = message.getText();
+				if (text.equals("/clear")) {
+					rooms.get(name).chatText.delete(0, rooms.get(name).chatText.length());
+					update(name);
+				} else {
+					try {
+						b.sendMessage(nickname.getText(), text, name);
+						message.setText("");
+					} catch (IOException e) {
+						rooms.get(name).chatText.append("<br>Fehler beim Senden der Nachricht");
+						update(name);
+					}
+				}
+			}
+		});
+		p.setResizeWeight(1);
+		return r;
 	}
 
 	public void MessageRecived(Message m) {
 		if (debug)
-			System.out.println("Nachricht von " + m.nickname + " erhalten: " + m.body);
-		JLableString.append("<br>" + m.nickname + ": " + m.body);
-		update();
+			System.out.println("Nachricht von " + m.nickname + " auf Channel "+m.room+" erhalten: " + m.body);
+		Room r = rooms.get(m.room);
+		if(r == null)
+			r = createNewRoomTab(m.room);
+		r.chatText.append("<br>" + m.nickname + ": " + m.body);
+		update(m.room);
 	}
 
-	public static void update() {
-		chatLable.setText("<html>" + JLableString + "</html>");
-		try {
-			Thread.sleep(200); // Wir warten ein wenig, damit AWT das Fenster neu berechnet und die
-			// folgenden Zeilen aktuelle Daten haben
-		} catch (InterruptedException e) {
+	public static void update(String room) {
+		Room r = rooms.get(room);
+		if(r != null) {		
+			r.chatLable.setText("<html>" + r.chatText + "</html>");
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+			}
+			JScrollBar bar = r.scrollPane.getVerticalScrollBar();
+			bar.setValue(bar.getMaximum());
+			f.toFront();
 		}
-		JScrollBar bar = scrollPane.getVerticalScrollBar();
-		bar.setValue(bar.getMaximum());
-		f.toFront();
 	}
 
 	public void discoveryClientLeft(String nickname) {
-		JLableString.append("<br>" + nickname + " hat seinen Client beendet.");
-		update();
+		rooms.get(BackendXMLStrings.defaultRoomName).chatText.append("<br>" + nickname + " hat seinen Client beendet.");
+		update(BackendXMLStrings.defaultRoomName);
 	}
 
 	public void nicknameChanged(String oldNickname, String newNickname) {
-		JLableString.append("<br>" + oldNickname + " hat seinen Namen in \"" + newNickname + "\" geändert.");
-		update();
+		rooms.get(BackendXMLStrings.defaultRoomName).chatText.append("<br>" + oldNickname + " hat seinen Namen in \"" + newNickname + "\" geändert.");
+		update(BackendXMLStrings.defaultRoomName);
 	}
 }

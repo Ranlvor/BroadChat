@@ -1,0 +1,21 @@
+XML-Namespace: http://starletp9.de/broadchat/room.html
+
+Mögliche Elemente:
+
+   room: 
+      Bedeutung: Zuständig um Nachrichten in Chaträume zu senden
+      Inhalt:    Der Chatraum, an den die Nachricht gesendet werden soll
+      Beispiel: 
+
+      <?xml version="1.0" encoding="UTF-8"?>
+      <ChatMessage version="2">
+         <nickname>Nickname</nickname>
+         <body>Hallo Leute</body>
+         <room xmlns="http://starletp9.de/broadchat/room.html">Raum 20</room>
+      </ChatMessage>
+
+Besonderheiten:
+   Pakete mit Raumangaben MÜSSEN Version 2-Pakete sein.
+   Pakete ohne Raumangaben SOLLTEN als Raum default interpretiert werden.
+   Beim Senden in den Raum default sollte das Version 1-Paket ohne Raumangabe verwendet werden
+   Ein Paket darf beliebig viele Raumelemente enthalten.

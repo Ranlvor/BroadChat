@@ -19,10 +19,15 @@
 
 package de.starletp9.BroadChat;
 
-public class Message {
-	public String body;
+import javax.swing.JScrollPane;
+import javax.swing.JLabel;
 
-	public String nickname;
+public class Room {
+	public String name;
 
-	public String room;
+	public JLabel chatLable;
+
+	public StringBuilder chatText = new StringBuilder();
+
+	public JScrollPane scrollPane;
 }
