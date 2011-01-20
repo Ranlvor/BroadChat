@@ -19,8 +19,8 @@
 
 package de.starletp9.BroadChat;
 
-import javax.swing.JScrollPane;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 
 public class Room {
 	public String name;

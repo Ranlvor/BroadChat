@@ -93,13 +93,13 @@ public class Backend {
 
 	public void sendMessage(String nickname, String message, String room) throws IOException {
 		Element root = new Element(BackendXMLStrings.messageRootElement);
-		if(room.equals(BackendXMLStrings.defaultRoomName))
+		if (room.equals(BackendXMLStrings.defaultRoomName))
 			root.setAttribute(BackendXMLStrings.version, "1");
 		else
 			root.setAttribute(BackendXMLStrings.version, "2");
 		root.addContent(new Element(BackendXMLStrings.messageNickname).setText(nickname));
 		root.addContent(new Element(BackendXMLStrings.messageBody).setText(message));
-		if(!room.equals(BackendXMLStrings.defaultRoomName))
+		if (!room.equals(BackendXMLStrings.defaultRoomName))
 			root.addContent(new Element(BackendXMLStrings.roomElement).setNamespace(Namespace.getNamespace(BackendXMLStrings.roomNamespace)).setText(room));
 		sendElement(root);
 	}
@@ -134,19 +134,21 @@ public class Backend {
 								ui.discoveryClientLeft(nickname);
 							else if (debug)
 								System.out.println("Discovery-ClientLeft-Paket verworfen wegen fehlendem Nickname!");
-						} else if ((element = rootElement.getChild(BackendXMLStrings.discoveryNicknameChanged, Namespace.getNamespace(BackendXMLStrings.discoveryNamespace))) != null) {
+						} else if ((element = rootElement
+								.getChild(BackendXMLStrings.discoveryNicknameChanged, Namespace.getNamespace(BackendXMLStrings.discoveryNamespace))) != null) {
 							String nickname = rootElement.getChildText(BackendXMLStrings.messageNickname);
 							String oldNickname = element.getText();
 							if (nickname != null && oldNickname != null)
 								ui.nicknameChanged(oldNickname, nickname);
 							else if (debug)
 								System.out.println("Discovery-NicknameChanged-Paket verworfen wegen fehlendem Neuem oder Altem Nickname!");
-						} else { //kein Discovery-Element, das könnte ne ganz normale Nachricht sein, eventuell mit Raumelement
+						} else { // kein Discovery-Element, das könnte ne ganz normale Nachricht sein, eventuell
+											// mit Raumelement
 							Message m = new Message();
 							m.nickname = rootElement.getChildText(BackendXMLStrings.messageNickname);
 							m.body = rootElement.getChildText(BackendXMLStrings.messageBody);
 							m.room = rootElement.getChildText(BackendXMLStrings.roomElement, Namespace.getNamespace(BackendXMLStrings.roomNamespace));
-							if(m.room == null)
+							if (m.room == null)
 								m.room = BackendXMLStrings.defaultRoomName;
 							if ((m.nickname != null) && (m.body != null))
 								ui.MessageRecived(m);

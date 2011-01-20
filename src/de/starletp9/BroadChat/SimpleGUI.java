@@ -26,24 +26,23 @@ import java.awt.event.FocusListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
+import java.util.HashMap;
 
-import javax.swing.JPanel;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTextField;
 import javax.swing.JTabbedPane;
-
-import java.util.HashMap;
+import javax.swing.JTextField;
 
 import org.jdom.JDOMException;
 
 public class SimpleGUI extends UI {
-	public static JTabbedPane tabbedPane = new JTabbedPane(); 
+	public static JTabbedPane tabbedPane = new JTabbedPane();
 
 	public static boolean debug = true;
 
@@ -113,7 +112,7 @@ public class SimpleGUI extends UI {
 		JPanel newRoomPanel = new JPanel();
 		newRoomPanel.add(newRoom);
 		tabbedPane.addTab("+", newRoomPanel);
-		newRoom.add(new JLabel ("              Name:              "));
+		newRoom.add(new JLabel("              Name:              "));
 		final JTextField roomName = new JTextField();
 		newRoom.add(roomName);
 		roomName.addActionListener(new ActionListener() {
@@ -144,7 +143,6 @@ public class SimpleGUI extends UI {
 	}
 
 	public static Room createNewRoomTab(final String name) {
-		JFrame frame = f;
 		Room r = new Room();
 		r.name = name;
 		rooms.put(name, r);
@@ -184,9 +182,9 @@ public class SimpleGUI extends UI {
 
 	public void MessageRecived(Message m) {
 		if (debug)
-			System.out.println("Nachricht von " + m.nickname + " auf Channel "+m.room+" erhalten: " + m.body);
+			System.out.println("Nachricht von " + m.nickname + " auf Channel " + m.room + " erhalten: " + m.body);
 		Room r = rooms.get(m.room);
-		if(r == null)
+		if (r == null)
 			r = createNewRoomTab(m.room);
 		r.chatText.append("<br>" + m.nickname + ": " + m.body);
 		update(m.room);
@@ -194,7 +192,7 @@ public class SimpleGUI extends UI {
 
 	public static void update(String room) {
 		Room r = rooms.get(room);
-		if(r != null) {		
+		if (r != null) {
 			r.chatLable.setText("<html>" + r.chatText + "</html>");
 			try {
 				Thread.sleep(200);
