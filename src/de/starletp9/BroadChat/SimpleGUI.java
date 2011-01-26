@@ -165,9 +165,14 @@ public class SimpleGUI extends UI {
 				if (text.equals("/clear")) {
 					rooms.get(name).chatText.delete(0, rooms.get(name).chatText.length());
 					update(name);
+					message.setText("");
 				} else if (text.equals("/close")) {
 					rooms.remove(name);
 					tabbedPane.remove(p);
+				} else if (text.equals("/help")) {
+					rooms.get(name).chatText.append("<br>/clear: Löscht alle Nachrichten dieses Fensters<br>/close: Schließt dieses Fenster");
+					update(name);
+					message.setText("");
 				} else {
 					try {
 						b.sendMessage(nickname.getText(), text, name);
