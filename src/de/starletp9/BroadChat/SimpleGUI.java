@@ -146,7 +146,7 @@ public class SimpleGUI extends UI {
 		Room r = new Room();
 		r.name = name;
 		rooms.put(name, r);
-		JSplitPane p = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		final JSplitPane p = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		tabbedPane.addTab(name, p);
 		JLabel chatLable = new JLabel();
 		r.chatLable = chatLable;
@@ -165,6 +165,9 @@ public class SimpleGUI extends UI {
 				if (text.equals("/clear")) {
 					rooms.get(name).chatText.delete(0, rooms.get(name).chatText.length());
 					update(name);
+				} else if (text.equals("/close")) {
+					rooms.remove(name);
+					tabbedPane.remove(p);
 				} else {
 					try {
 						b.sendMessage(nickname.getText(), text, name);
