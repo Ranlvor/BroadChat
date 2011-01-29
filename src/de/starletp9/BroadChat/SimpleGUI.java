@@ -25,7 +25,11 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.HashMap;
 
 import javax.swing.Box;
@@ -187,9 +191,50 @@ public class SimpleGUI extends UI {
 					rooms.remove(name);
 					tabbedPane.remove(p);
 				} else if (text.equals("/help")) {
-					rooms.get(name).chatText.append("<br>/clear: Löscht alle Nachrichten dieses Fensters<br>/close: Schließt dieses Fenster");
+					rooms.get(name).chatText.append("<br>/clear: Löscht alle Nachrichten dieses Fensters" + "<br>/close: Schließt dieses Fenster"
+							+ "<br>/changelog: Zeigt das Changelog dieses Programms an");
 					update(name);
 					message.setText("");
+				} else if (text.equals("/changelog")) {
+					message.setText("");
+					URL url = ClassLoader.getSystemResource("changelog.txt");
+					System.out.println(url);
+					if (url != null) {
+						InputStream is = null;
+						BufferedReader bis = null;
+						InputStreamReader isr = null;
+						try {
+							is = url.openStream();
+							isr = new InputStreamReader(is);
+							bis = new BufferedReader(isr);
+							String line = bis.readLine();
+							while (line != null) {
+								rooms.get(name).chatText.append("<br>"+line);
+								line = bis.readLine();
+							}
+						} catch (IOException e) {
+							rooms.get(name).chatText.append("Fehler beim Laden des Changelogs<br>");
+						} finally {
+							if (bis != null)
+								try {
+									bis.close();
+								} catch (IOException e) {
+								}
+							if (isr != null)
+								try {
+									isr.close();
+								} catch (IOException e) {
+								}
+							if (is != null)
+								try {
+									is.close();
+								} catch (IOException e) {
+								}
+						}
+					} else {
+						rooms.get(name).chatText.append("Fehler beim Laden des Changelogs<br>");
+					}
+					update(name);
 				} else {
 					try {
 						b.sendMessage(nickname.getText(), text, name);
