@@ -38,11 +38,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.jdom.JDOMException;
 
 public class SimpleGUI extends UI {
-	public static JTabbedPane tabbedPane = new JTabbedPane();
+	public static JTabbedPane tabbedPane;
 
 	public static boolean debug = true;
 
@@ -58,6 +60,20 @@ public class SimpleGUI extends UI {
 
 	public static void main(String[] args) throws IOException, JDOMException {
 		b = new Backend(new SimpleGUI());
+		tabbedPane = new JTabbedPane();
+		tabbedPane.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				String title = tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
+				if (title.length() >= 2) {
+					Room r = rooms.get(title.substring(2));
+					if ((r != null) && !r.red) {
+						r.red = true;
+						tabbedPane.setTitleAt(tabbedPane.indexOfComponent(r.splitPane), r.name);
+					}
+				}
+			}
+		});
 		f = new JFrame("BroadChat");
 		f.setSize(500, 600);
 		f.addWindowListener(new WindowListener() {
@@ -147,6 +163,7 @@ public class SimpleGUI extends UI {
 		r.name = name;
 		rooms.put(name, r);
 		final JSplitPane p = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		r.splitPane = p;
 		tabbedPane.addTab(name, p);
 		JLabel chatLable = new JLabel();
 		r.chatLable = chatLable;
@@ -196,6 +213,10 @@ public class SimpleGUI extends UI {
 			r = createNewRoomTab(m.room);
 		r.chatText.append("<br>" + m.nickname + ": " + m.body);
 		update(m.room);
+		if (r.red && (tabbedPane.indexOfComponent(r.splitPane) != tabbedPane.getSelectedIndex())) {
+			tabbedPane.setTitleAt(tabbedPane.indexOfComponent(r.splitPane), "* " + r.name);
+			r.red = false;
+		}
 	}
 
 	public static void update(String room) {

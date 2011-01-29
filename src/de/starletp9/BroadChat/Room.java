@@ -21,6 +21,7 @@ package de.starletp9.BroadChat;
 
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 
 public class Room {
 	public String name;
@@ -30,4 +31,8 @@ public class Room {
 	public StringBuilder chatText = new StringBuilder();
 
 	public JScrollPane scrollPane;
+
+	public JSplitPane splitPane;
+
+	public boolean red = true;
 }
