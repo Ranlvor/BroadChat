@@ -3,6 +3,9 @@
 	<target name="build-TUI">
 		<mkdir dir="/tmp/BroadChat" />
 		<javac srcdir="${basedir}/src" includes="de/starletp9/BroadChat/TUI.java" destdir="/tmp/BroadChat" optimize="true" debug="false" classpath="${basedir}/../libs/jdom/build/jdom.jar" />
+		<exec dir="${basedir}" executable="${basedir}/generateChangelog.sh"> 
+			<arg value="/tmp/BroadChat/changelog.txt" /> 
+		</exec>
 		<jar destfile="${basedir}/TUI.jar" filesetmanifest="mergewithoutmain">
 			<manifest>
 				<attribute name="Main-Class" value="de.starletp9.BroadChat.TUI" />
@@ -16,9 +19,13 @@
 		</jar>
 		<delete dir="/tmp/BroadChat" />
 	</target>
+
 	<target name="build-SimpleGUI">
 		<mkdir dir="/tmp/BroadChat" />
 		<javac srcdir="${basedir}/src" includes="de/starletp9/BroadChat/SimpleGUI.java" destdir="/tmp/BroadChat" optimize="true" debug="false" classpath="${basedir}/../libs/jdom/build/jdom.jar" />
+		<exec dir="${basedir}" executable="${basedir}/generateChangelog.sh"> 
+			<arg value="/tmp/BroadChat/changelog.txt" /> 
+		</exec>
 		<jar destfile="${basedir}/SimpleGUI.jar" filesetmanifest="mergewithoutmain">
 			<manifest>
 				<attribute name="Main-Class" value="de.starletp9.BroadChat.SimpleGUI" />
@@ -32,5 +39,6 @@
 		</jar>
 		<delete dir="/tmp/BroadChat" />
 	</target>
+
 	<target name="build-ALL" depends="build-TUI, build-SimpleGUI" />
 </project>
