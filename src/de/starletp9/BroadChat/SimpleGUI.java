@@ -43,6 +43,7 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -171,7 +172,8 @@ public class SimpleGUI extends UI {
 		final JSplitPane p = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		r.splitPane = p;
 		tabbedPane.addTab(name, p);
-		JLabel chatLable = new JLabel();
+		JTextArea chatLable = new JTextArea();
+		chatLable.setEditable(false);
 		r.chatLable = chatLable;
 		JScrollPane scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setViewportView(chatLable);
@@ -213,8 +215,8 @@ public class SimpleGUI extends UI {
 					rooms.remove(name);
 					tabbedPane.remove(p);
 				} else if (text.equals("/help")) {
-					rooms.get(name).chatText.append("<br>/clear: Löscht alle Nachrichten dieses Fensters" + "<br>/close: Schließt dieses Fenster"
-							+ "<br>/changelog: Zeigt das Changelog dieses Programms an");
+					rooms.get(name).chatText.append("\n/clear: Löscht alle Nachrichten dieses Fensters" + "\n/close: Schließt dieses Fenster"
+							+ "\n/changelog: Zeigt das Changelog dieses Programms an");
 					update(name);
 					message.setText("");
 				} else if (text.equals("/changelog")) {
@@ -231,11 +233,11 @@ public class SimpleGUI extends UI {
 							bis = new BufferedReader(isr);
 							String line = bis.readLine();
 							while (line != null) {
-								rooms.get(name).chatText.append("<br>" + line);
+								rooms.get(name).chatText.append("\n" + line);
 								line = bis.readLine();
 							}
 						} catch (IOException e) {
-							rooms.get(name).chatText.append("Fehler beim Laden des Changelogs<br>");
+							rooms.get(name).chatText.append("\nFehler beim Laden des Changelogs");
 						} finally {
 							if (bis != null)
 								try {
@@ -254,7 +256,7 @@ public class SimpleGUI extends UI {
 								}
 						}
 					} else {
-						rooms.get(name).chatText.append("Fehler beim Laden des Changelogs<br>");
+						rooms.get(name).chatText.append("\nFehler beim Laden des Changelogs");
 					}
 					update(name);
 				} else {
@@ -262,7 +264,7 @@ public class SimpleGUI extends UI {
 						b.sendMessage(nickname.getText(), text, name);
 						message.setText("");
 					} catch (IOException e) {
-						rooms.get(name).chatText.append("<br>Fehler beim Senden der Nachricht");
+						rooms.get(name).chatText.append("\nFehler beim Senden der Nachricht");
 						update(name);
 					}
 				}
@@ -278,7 +280,7 @@ public class SimpleGUI extends UI {
 		Room r = rooms.get(m.room);
 		if (r == null)
 			r = createNewRoomTab(m.room);
-		r.chatText.append("<br>" + m.nickname + ": " + m.body);
+		r.chatText.append("\n" + m.nickname + ": " + m.body);
 		update(m.room);
 		if (r.red && (tabbedPane.indexOfComponent(r.splitPane) != tabbedPane.getSelectedIndex())) {
 			tabbedPane.setTitleAt(tabbedPane.indexOfComponent(r.splitPane), "* " + r.name);
@@ -289,7 +291,7 @@ public class SimpleGUI extends UI {
 	public static void update(String room) {
 		Room r = rooms.get(room);
 		if (r != null) {
-			r.chatLable.setText("<html>" + r.chatText + "</html>");
+			r.chatLable.setText(r.chatText.toString());
 			try {
 				Thread.sleep(200);
 			} catch (InterruptedException e) {
@@ -301,12 +303,12 @@ public class SimpleGUI extends UI {
 	}
 
 	public void discoveryClientLeft(String nickname) {
-		rooms.get(BackendXMLStrings.defaultRoomName).chatText.append("<br>" + nickname + " hat seinen Client beendet.");
+		rooms.get(BackendXMLStrings.defaultRoomName).chatText.append("\n" + nickname + " hat seinen Client beendet.");
 		update(BackendXMLStrings.defaultRoomName);
 	}
 
 	public void nicknameChanged(String oldNickname, String newNickname) {
-		rooms.get(BackendXMLStrings.defaultRoomName).chatText.append("<br>" + oldNickname + " hat seinen Namen in \"" + newNickname + "\" geändert.");
+		rooms.get(BackendXMLStrings.defaultRoomName).chatText.append("\n" + oldNickname + " hat seinen Namen in \"" + newNickname + "\" geändert.");
 		update(BackendXMLStrings.defaultRoomName);
 	}
 }

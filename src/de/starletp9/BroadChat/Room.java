@@ -22,11 +22,12 @@ package de.starletp9.BroadChat;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
 
 public class Room {
 	public String name;
 
-	public JLabel chatLable;
+	public JTextArea chatLable;
 
 	public StringBuilder chatText = new StringBuilder();
 
