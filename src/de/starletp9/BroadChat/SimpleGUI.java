@@ -23,6 +23,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.BufferedReader;
@@ -178,6 +180,26 @@ public class SimpleGUI extends UI {
 
 		final JTextField message = new JTextField();
 		p.add(message);
+		message.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == 17) {
+					int newIndex = tabbedPane.getSelectedIndex() + 1;
+					if (newIndex >= tabbedPane.getComponentCount())
+						newIndex = 1;
+					tabbedPane.setSelectedIndex(newIndex);
+				}
+			}
+		});
 		message.addActionListener(new ActionListener() {
 
 			@Override
@@ -209,7 +231,7 @@ public class SimpleGUI extends UI {
 							bis = new BufferedReader(isr);
 							String line = bis.readLine();
 							while (line != null) {
-								rooms.get(name).chatText.append("<br>"+line);
+								rooms.get(name).chatText.append("<br>" + line);
 								line = bis.readLine();
 							}
 						} catch (IOException e) {
