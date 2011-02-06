@@ -19,10 +19,10 @@
 
 package de.starletp9.BroadChat;
 
-import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 public class Room {
 	public String name;
@@ -34,6 +34,8 @@ public class Room {
 	public JScrollPane scrollPane;
 
 	public JSplitPane splitPane;
+
+	public JTextField messageTextField;
 
 	public boolean red = true;
 }

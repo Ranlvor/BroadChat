@@ -74,10 +74,14 @@ public class SimpleGUI extends UI {
 				String title = tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
 				if (title.length() >= 2) {
 					Room r = rooms.get(title.substring(2));
-					if ((r != null) && !r.red) {
-						r.red = true;
-						tabbedPane.setTitleAt(tabbedPane.indexOfComponent(r.splitPane), r.name);
-					}
+					if (r != null) {
+						r.messageTextField.grabFocus();
+						if (!r.red) {
+							r.red = true;
+							tabbedPane.setTitleAt(tabbedPane.indexOfComponent(r.splitPane), r.name);
+						}
+					} else if ((r = rooms.get(title)) != null)
+						r.messageTextField.grabFocus();
 				}
 			}
 		});
@@ -166,23 +170,20 @@ public class SimpleGUI extends UI {
 	}
 
 	public static Room createNewRoomTab(final String name) {
-		Room r = new Room();
+		final Room r = new Room();
 		r.name = name;
 		rooms.put(name, r);
-		final JSplitPane p = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		r.splitPane = p;
-		tabbedPane.addTab(name, p);
-		JTextArea chatLable = new JTextArea();
-		chatLable.setEditable(false);
-		r.chatLable = chatLable;
-		JScrollPane scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.setViewportView(chatLable);
-		r.scrollPane = scrollPane;
-		p.add(scrollPane);
+		r.splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		tabbedPane.addTab(name, r.splitPane);
+		r.chatLable = new JTextArea();
+		r.chatLable.setEditable(false);
+		r.scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		r.scrollPane.setViewportView(r.chatLable);
+		r.splitPane.add(r.scrollPane);
 
-		final JTextField message = new JTextField();
-		p.add(message);
-		message.addKeyListener(new KeyListener() {
+		r.messageTextField = new JTextField();
+		r.splitPane.add(r.messageTextField);
+		r.messageTextField.addKeyListener(new KeyListener() {
 
 			@Override
 			public void keyTyped(KeyEvent e) {
@@ -202,25 +203,25 @@ public class SimpleGUI extends UI {
 				}
 			}
 		});
-		message.addActionListener(new ActionListener() {
+		r.messageTextField.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				String text = message.getText();
+				String text = r.messageTextField.getText();
 				if (text.equals("/clear")) {
 					rooms.get(name).chatText.delete(0, rooms.get(name).chatText.length());
 					update(name);
-					message.setText("");
+					r.messageTextField.setText("");
 				} else if (text.equals("/close")) {
 					rooms.remove(name);
-					tabbedPane.remove(p);
+					tabbedPane.remove(r.splitPane);
 				} else if (text.equals("/help")) {
 					rooms.get(name).chatText.append("\n/clear: Löscht alle Nachrichten dieses Fensters" + "\n/close: Schließt dieses Fenster"
 							+ "\n/changelog: Zeigt das Changelog dieses Programms an");
 					update(name);
-					message.setText("");
+					r.messageTextField.setText("");
 				} else if (text.equals("/changelog")) {
-					message.setText("");
+					r.messageTextField.setText("");
 					URL url = ClassLoader.getSystemResource("changelog.txt");
 					System.out.println(url);
 					if (url != null) {
@@ -262,7 +263,7 @@ public class SimpleGUI extends UI {
 				} else {
 					try {
 						b.sendMessage(nickname.getText(), text, name);
-						message.setText("");
+						r.messageTextField.setText("");
 					} catch (IOException e) {
 						rooms.get(name).chatText.append("\nFehler beim Senden der Nachricht");
 						update(name);
@@ -270,7 +271,7 @@ public class SimpleGUI extends UI {
 				}
 			}
 		});
-		p.setResizeWeight(1);
+		r.splitPane.setResizeWeight(1);
 		return r;
 	}
 
