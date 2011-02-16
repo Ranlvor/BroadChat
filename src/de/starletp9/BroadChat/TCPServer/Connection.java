@@ -64,7 +64,6 @@ public class Connection {
 
 	public void close() {
 		ui.acticeConnections.remove(this);
-		t.stop();
 		it.goOn = false;
 		try {
 			s.close();

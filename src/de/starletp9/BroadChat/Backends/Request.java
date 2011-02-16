@@ -22,6 +22,8 @@ package de.starletp9.BroadChat.Backends;
 import java.io.Serializable;
 
 public class Request implements Serializable {
+	private static final long serialVersionUID = -9137974320810386142L;
+
 	public int type = 0; /*
 	0 = ignored
 	1 = Message
