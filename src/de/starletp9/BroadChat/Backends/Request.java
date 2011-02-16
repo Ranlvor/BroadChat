@@ -17,22 +17,17 @@
 
  */
 
-package de.starletp9.BroadChat;
+package de.starletp9.BroadChat.Backends;
 
-import java.io.IOException;
+import java.io.Serializable;
 
-public interface Backend {
-
-	public abstract void sendMessage(String nickname, String message) throws IOException;
-
-	public abstract void sendMessage(String nickname, String message, String room) throws IOException;
-
-	public abstract void reciveLoop();
-
-	public abstract void shutdown(String nickname);
-
-	public abstract void sendShutdownAnnouncement(String nickname);
-
-	public abstract void nicknameChanged(String oldNickname, String nickname);
-
+public class Request implements Serializable {
+	public int type = 0; /*
+	0 = ignored
+	1 = Message
+	2 = Nickname changed
+	3 = shutdown announcement
+	*/
+	
+	public String parm1, parm2, parm3;
 }

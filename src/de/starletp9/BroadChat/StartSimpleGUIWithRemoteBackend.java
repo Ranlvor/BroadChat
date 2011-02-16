@@ -20,19 +20,13 @@
 package de.starletp9.BroadChat;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 
-public interface Backend {
+import de.starletp9.BroadChat.Backends.RemoteBackend;
 
-	public abstract void sendMessage(String nickname, String message) throws IOException;
-
-	public abstract void sendMessage(String nickname, String message, String room) throws IOException;
-
-	public abstract void reciveLoop();
-
-	public abstract void shutdown(String nickname);
-
-	public abstract void sendShutdownAnnouncement(String nickname);
-
-	public abstract void nicknameChanged(String oldNickname, String nickname);
-
+public class StartSimpleGUIWithRemoteBackend {
+	public static void main(String[] args) throws UnknownHostException, IOException {
+		SimpleGUI.b = new RemoteBackend(new SimpleGUI(), "127.0.0.1");
+		SimpleGUI.init();
+	}
 }

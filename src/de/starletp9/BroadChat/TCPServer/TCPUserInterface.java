@@ -17,22 +17,26 @@
 
  */
 
-package de.starletp9.BroadChat;
+package de.starletp9.BroadChat.TCPServer;
 
-import java.io.IOException;
+import java.util.ArrayList;
 
-public interface Backend {
+import de.starletp9.BroadChat.Message;
+import de.starletp9.BroadChat.UI;
+import de.starletp9.BroadChat.Backends.Request;
 
-	public abstract void sendMessage(String nickname, String message) throws IOException;
+public class TCPUserInterface extends UI {
+	public ArrayList<Connection> acticeConnections = new ArrayList<Connection>();
 
-	public abstract void sendMessage(String nickname, String message, String room) throws IOException;
-
-	public abstract void reciveLoop();
-
-	public abstract void shutdown(String nickname);
-
-	public abstract void sendShutdownAnnouncement(String nickname);
-
-	public abstract void nicknameChanged(String oldNickname, String nickname);
-
+	@Override
+	public void MessageRecived(Message m) {
+		Request r = new Request();
+		r.type = 1;
+		r.parm1 = m.nickname;
+		r.parm2 = m.body;
+		r.parm3 = m.room;
+		for (Connection con : acticeConnections) {
+			con.sendRequest(r);
+		}
+	}
 }

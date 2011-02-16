@@ -50,6 +50,9 @@ import javax.swing.event.ChangeListener;
 
 import org.jdom.JDOMException;
 
+import de.starletp9.BroadChat.Backends.DirektBackendXMLStrings;
+import de.starletp9.BroadChat.Backends.DirektBackend;
+
 public class SimpleGUI extends UI {
 	public static JTabbedPane tabbedPane;
 
@@ -66,7 +69,11 @@ public class SimpleGUI extends UI {
 	public static JTextField nickname;
 
 	public static void main(String[] args) throws IOException, JDOMException {
-		b = new Backend(new SimpleGUI());
+		b = new DirektBackend(new SimpleGUI());
+		init();
+	}
+
+	public static void init() {
 		tabbedPane = new JTabbedPane();
 		tabbedPane.addChangeListener(new ChangeListener() {
 			@Override
@@ -150,7 +157,7 @@ public class SimpleGUI extends UI {
 				roomName.setText("");
 			}
 		});
-		createNewRoomTab(BackendXMLStrings.defaultRoomName);
+		createNewRoomTab(DirektBackendXMLStrings.defaultRoomName);
 		tabbedPane.setSelectedIndex(1);
 		JSplitPane p = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		p.add(tabbedPane);
@@ -304,12 +311,12 @@ public class SimpleGUI extends UI {
 	}
 
 	public void discoveryClientLeft(String nickname) {
-		rooms.get(BackendXMLStrings.defaultRoomName).chatText.append("\n" + nickname + " hat seinen Client beendet.");
-		update(BackendXMLStrings.defaultRoomName);
+		rooms.get(DirektBackendXMLStrings.defaultRoomName).chatText.append("\n" + nickname + " hat seinen Client beendet.");
+		update(DirektBackendXMLStrings.defaultRoomName);
 	}
 
 	public void nicknameChanged(String oldNickname, String newNickname) {
-		rooms.get(BackendXMLStrings.defaultRoomName).chatText.append("\n" + oldNickname + " hat seinen Namen in \"" + newNickname + "\" geändert.");
-		update(BackendXMLStrings.defaultRoomName);
+		rooms.get(DirektBackendXMLStrings.defaultRoomName).chatText.append("\n" + oldNickname + " hat seinen Namen in \"" + newNickname + "\" geändert.");
+		update(DirektBackendXMLStrings.defaultRoomName);
 	}
 }

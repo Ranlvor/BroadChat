@@ -17,7 +17,7 @@
 
  */
 
-package de.starletp9.BroadChat;
+package de.starletp9.BroadChat.Backends;
 
 import java.io.IOException;
 
