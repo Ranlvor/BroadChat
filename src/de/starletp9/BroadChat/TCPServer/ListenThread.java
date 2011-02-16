@@ -52,7 +52,7 @@ public class ListenThread implements Runnable {
 			ServerSocket ss = new ServerSocket(1337);
 			while (true) {
 				Socket s = ss.accept();
-				Connection ch = new Connection(s, b);
+				Connection ch = new Connection(s, b, ui);
 				ui.acticeConnections.add(ch);
 			}
 		} catch (IOException e) {

@@ -35,8 +35,28 @@ public class TCPUserInterface extends UI {
 		r.parm1 = m.nickname;
 		r.parm2 = m.body;
 		r.parm3 = m.room;
-		for (Connection con : acticeConnections) {
+		sendToAllConnections(r);
+	}
+
+	@Override
+	public void nicknameChanged(String oldNickname, String newNickname) {
+		Request r = new Request();
+		r.type = 2;
+		r.parm1 = oldNickname;
+		r.parm2 = newNickname;
+		sendToAllConnections(r);
+	}
+
+	@Override
+	public void discoveryClientLeft(String nickname) {
+		Request r = new Request();
+		r.type = 3;
+		r.parm1 = nickname;
+		sendToAllConnections(r);
+	}
+
+	public void sendToAllConnections(Request r) {
+		for (Connection con : acticeConnections)
 			con.sendRequest(r);
-		}
 	}
 }

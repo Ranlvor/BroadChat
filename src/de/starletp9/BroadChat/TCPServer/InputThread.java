@@ -27,8 +27,10 @@ import de.starletp9.BroadChat.Backends.Request;
 
 public class InputThread implements Runnable {
 	private ObjectInputStream ois;
-	
+
 	private Backend b;
+
+	private Connection c;
 
 	public boolean goOn = true;
 
@@ -37,21 +39,28 @@ public class InputThread implements Runnable {
 		while (goOn) {
 			try {
 				Request r = (Request) ois.readObject();
-				if(r.type == 1) {
-					if(r.parm3 != null)
+				if (r.type == 1) {
+					if (r.parm3 == null)
 						b.sendMessage(r.parm1, r.parm2);
 					else
 						b.sendMessage(r.parm1, r.parm2, r.parm3);
+				} else if (r.type == 2) {
+					b.nicknameChanged(r.parm1, r.parm2);
+				} else if (r.type == 3) {
+					b.sendShutdownAnnouncement(r.parm1);
 				}
 			} catch (IOException e) {
+				c.close();
 			} catch (ClassNotFoundException e) {
+				c.close();
 			}
 		}
 	}
 
-	public InputThread(ObjectInputStream ois, Backend b) {
+	public InputThread(ObjectInputStream ois, Backend b, Connection c) {
 		this.ois = ois;
 		this.b = b;
+		this.c = c;
 	}
 
 }
