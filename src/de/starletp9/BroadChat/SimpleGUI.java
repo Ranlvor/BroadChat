@@ -48,10 +48,7 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.jdom.JDOMException;
-
 import de.starletp9.BroadChat.Backends.DirektBackendXMLStrings;
-import de.starletp9.BroadChat.Backends.DirektBackend;
 
 public class SimpleGUI extends UI {
 	public static JTabbedPane tabbedPane;
@@ -67,11 +64,6 @@ public class SimpleGUI extends UI {
 	public static HashMap<String, Room> rooms = new HashMap<String, Room>();
 
 	public static JTextField nickname;
-
-	public static void main(String[] args) throws IOException, JDOMException {
-		b = new DirektBackend(new SimpleGUI());
-		init();
-	}
 
 	public static void init() {
 		tabbedPane = new JTabbedPane();
