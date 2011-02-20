@@ -25,10 +25,10 @@
 
 	<target name="build-SimpleGUI" depends="changelog">
 		<mkdir dir="/tmp/BroadChat" />
-		<javac srcdir="${basedir}/src" includes="de/starletp9/BroadChat/StartSimpleGUIWithDirektBackend.java" destdir="/tmp/BroadChat" optimize="true" debug="false" classpath="${basedir}/../libs/jdom/build/jdom.jar" />
+		<javac srcdir="${basedir}/src" includes="de/starletp9/BroadChat/StartSimpleGUIWithDirectBackend.java" destdir="/tmp/BroadChat" optimize="true" debug="false" classpath="${basedir}/../libs/jdom/build/jdom.jar" />
 		<jar destfile="${basedir}/SimpleGUI.jar" filesetmanifest="mergewithoutmain">
 			<manifest>
-				<attribute name="Main-Class" value="de.starletp9.BroadChat.StartSimpleGUIWithDirektBackend" />
+				<attribute name="Main-Class" value="de.starletp9.BroadChat.StartSimpleGUIWithDirectBackend" />
 				<attribute name="Class-Path" value="." />
 			</manifest>
 			<zipfileset src="${basedir}/../libs/jdom/build/jdom.jar" />

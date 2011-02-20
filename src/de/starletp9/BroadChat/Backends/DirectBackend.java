@@ -39,7 +39,7 @@ import de.starletp9.BroadChat.Backend;
 import de.starletp9.BroadChat.Message;
 import de.starletp9.BroadChat.UI;
 
-public class DirektBackend implements Backend {
+public class DirectBackend implements Backend {
 
 	public static final int defaultPort = 1337;
 
@@ -59,7 +59,7 @@ public class DirektBackend implements Backend {
 
 	private volatile boolean goOn = true;
 
-	public DirektBackend(UI ui) throws SocketException, UnknownHostException {
+	public DirectBackend(UI ui) throws SocketException, UnknownHostException {
 		if (saxBuilder == null)
 			saxBuilder = new SAXBuilder();
 		reciver = InetAddress.getByName(defaultReciverIP);
@@ -67,7 +67,7 @@ public class DirektBackend implements Backend {
 		this.ui = ui;
 	}
 
-	public DirektBackend(UI ui, int port) throws SocketException, UnknownHostException {
+	public DirectBackend(UI ui, int port) throws SocketException, UnknownHostException {
 		if (saxBuilder == null)
 			saxBuilder = new SAXBuilder();
 		reciver = InetAddress.getByName(defaultReciverIP);
@@ -75,7 +75,7 @@ public class DirektBackend implements Backend {
 		this.ui = ui;
 	}
 
-	public DirektBackend(UI ui, String reciverIP) throws SocketException, UnknownHostException {
+	public DirectBackend(UI ui, String reciverIP) throws SocketException, UnknownHostException {
 		if (saxBuilder == null)
 			saxBuilder = new SAXBuilder();
 		reciver = InetAddress.getByName(reciverIP);
@@ -83,7 +83,7 @@ public class DirektBackend implements Backend {
 		this.ui = ui;
 	}
 
-	public DirektBackend(UI ui, String reciverIP, int port) throws SocketException, UnknownHostException {
+	public DirectBackend(UI ui, String reciverIP, int port) throws SocketException, UnknownHostException {
 		if (saxBuilder == null)
 			saxBuilder = new SAXBuilder();
 		reciver = InetAddress.getByName(reciverIP);
@@ -92,19 +92,19 @@ public class DirektBackend implements Backend {
 	}
 
 	public void sendMessage(String nickname, String message) throws IOException {
-		sendMessage(nickname, message, DirektBackendXMLStrings.defaultRoomName);
+		sendMessage(nickname, message, DirectBackendXMLStrings.defaultRoomName);
 	}
 
 	public void sendMessage(String nickname, String message, String room) throws IOException {
-		Element root = new Element(DirektBackendXMLStrings.messageRootElement);
-		if (room.equals(DirektBackendXMLStrings.defaultRoomName))
-			root.setAttribute(DirektBackendXMLStrings.version, "1");
+		Element root = new Element(DirectBackendXMLStrings.messageRootElement);
+		if (room.equals(DirectBackendXMLStrings.defaultRoomName))
+			root.setAttribute(DirectBackendXMLStrings.version, "1");
 		else
-			root.setAttribute(DirektBackendXMLStrings.version, "2");
-		root.addContent(new Element(DirektBackendXMLStrings.messageNickname).setText(nickname));
-		root.addContent(new Element(DirektBackendXMLStrings.messageBody).setText(message));
-		if (!room.equals(DirektBackendXMLStrings.defaultRoomName))
-			root.addContent(new Element(DirektBackendXMLStrings.roomElement).setNamespace(Namespace.getNamespace(DirektBackendXMLStrings.roomNamespace)).setText(room));
+			root.setAttribute(DirectBackendXMLStrings.version, "2");
+		root.addContent(new Element(DirectBackendXMLStrings.messageNickname).setText(nickname));
+		root.addContent(new Element(DirectBackendXMLStrings.messageBody).setText(message));
+		if (!room.equals(DirectBackendXMLStrings.defaultRoomName))
+			root.addContent(new Element(DirectBackendXMLStrings.roomElement).setNamespace(Namespace.getNamespace(DirectBackendXMLStrings.roomNamespace)).setText(room));
 		sendElement(root);
 	}
 
@@ -120,27 +120,27 @@ public class DirektBackend implements Backend {
 						System.out.println("Empfange: " + dString);
 					Document d = saxBuilder.build(new StringReader(dString));
 					Element rootElement = d.getRootElement();
-					int paketVersion = Integer.parseInt(rootElement.getAttributeValue(DirektBackendXMLStrings.version));
+					int paketVersion = Integer.parseInt(rootElement.getAttributeValue(DirectBackendXMLStrings.version));
 					if (paketVersion == 1) {
 						Message m = new Message();
-						m.nickname = rootElement.getChildText(DirektBackendXMLStrings.messageNickname);
-						m.body = rootElement.getChildText(DirektBackendXMLStrings.messageBody);
-						m.room = DirektBackendXMLStrings.defaultRoomName;
+						m.nickname = rootElement.getChildText(DirectBackendXMLStrings.messageNickname);
+						m.body = rootElement.getChildText(DirectBackendXMLStrings.messageBody);
+						m.room = DirectBackendXMLStrings.defaultRoomName;
 						if ((m.nickname != null) && (m.body != null))
 							ui.MessageRecived(m);
 						else if (debug)
 							System.out.println("Paket verworfen, da Pakete der Version 1 einen Nickname und einen Body enthalten MÜSSEN");
 					} else if (paketVersion == 2) {
-						Element element = rootElement.getChild(DirektBackendXMLStrings.discoveryClientLeft, Namespace.getNamespace(DirektBackendXMLStrings.discoveryNamespace));
+						Element element = rootElement.getChild(DirectBackendXMLStrings.discoveryClientLeft, Namespace.getNamespace(DirectBackendXMLStrings.discoveryNamespace));
 						if (element != null) {
-							String nickname = rootElement.getChildText(DirektBackendXMLStrings.messageNickname);
+							String nickname = rootElement.getChildText(DirectBackendXMLStrings.messageNickname);
 							if (nickname != null)
 								ui.discoveryClientLeft(nickname);
 							else if (debug)
 								System.out.println("Discovery-ClientLeft-Paket verworfen wegen fehlendem Nickname!");
 						} else if ((element = rootElement
-								.getChild(DirektBackendXMLStrings.discoveryNicknameChanged, Namespace.getNamespace(DirektBackendXMLStrings.discoveryNamespace))) != null) {
-							String nickname = rootElement.getChildText(DirektBackendXMLStrings.messageNickname);
+								.getChild(DirectBackendXMLStrings.discoveryNicknameChanged, Namespace.getNamespace(DirectBackendXMLStrings.discoveryNamespace))) != null) {
+							String nickname = rootElement.getChildText(DirectBackendXMLStrings.messageNickname);
 							String oldNickname = element.getText();
 							if (nickname != null && oldNickname != null)
 								ui.nicknameChanged(oldNickname, nickname);
@@ -149,11 +149,11 @@ public class DirektBackend implements Backend {
 						} else { // kein Discovery-Element, das könnte ne ganz normale Nachricht sein, eventuell
 							// mit Raumelement
 							Message m = new Message();
-							m.nickname = rootElement.getChildText(DirektBackendXMLStrings.messageNickname);
-							m.body = rootElement.getChildText(DirektBackendXMLStrings.messageBody);
-							m.room = rootElement.getChildText(DirektBackendXMLStrings.roomElement, Namespace.getNamespace(DirektBackendXMLStrings.roomNamespace));
+							m.nickname = rootElement.getChildText(DirectBackendXMLStrings.messageNickname);
+							m.body = rootElement.getChildText(DirectBackendXMLStrings.messageBody);
+							m.room = rootElement.getChildText(DirectBackendXMLStrings.roomElement, Namespace.getNamespace(DirectBackendXMLStrings.roomNamespace));
 							if (m.room == null)
-								m.room = DirektBackendXMLStrings.defaultRoomName;
+								m.room = DirectBackendXMLStrings.defaultRoomName;
 							if ((m.nickname != null) && (m.body != null))
 								ui.MessageRecived(m);
 						}
@@ -186,18 +186,18 @@ public class DirektBackend implements Backend {
 	}
 
 	public void sendShutdownAnnouncement(String nickname) {
-		Element root = new Element(DirektBackendXMLStrings.messageRootElement);
-		root.setAttribute(DirektBackendXMLStrings.version, "2");
-		root.addContent(new Element(DirektBackendXMLStrings.messageNickname).setText(nickname));
-		root.addContent(new Element(DirektBackendXMLStrings.discoveryClientLeft).setNamespace(Namespace.getNamespace(DirektBackendXMLStrings.discoveryNamespace)));
+		Element root = new Element(DirectBackendXMLStrings.messageRootElement);
+		root.setAttribute(DirectBackendXMLStrings.version, "2");
+		root.addContent(new Element(DirectBackendXMLStrings.messageNickname).setText(nickname));
+		root.addContent(new Element(DirectBackendXMLStrings.discoveryClientLeft).setNamespace(Namespace.getNamespace(DirectBackendXMLStrings.discoveryNamespace)));
 		sendElement(root);
 	}
 
 	public void nicknameChanged(String oldNickname, String nickname) {
-		Element root = new Element(DirektBackendXMLStrings.messageRootElement);
-		root.setAttribute(DirektBackendXMLStrings.version, "2");
-		root.addContent(new Element(DirektBackendXMLStrings.messageNickname).setText(nickname));
-		root.addContent(new Element(DirektBackendXMLStrings.discoveryNicknameChanged).setNamespace(Namespace.getNamespace(DirektBackendXMLStrings.discoveryNamespace)).setText(
+		Element root = new Element(DirectBackendXMLStrings.messageRootElement);
+		root.setAttribute(DirectBackendXMLStrings.version, "2");
+		root.addContent(new Element(DirectBackendXMLStrings.messageNickname).setText(nickname));
+		root.addContent(new Element(DirectBackendXMLStrings.discoveryNicknameChanged).setNamespace(Namespace.getNamespace(DirectBackendXMLStrings.discoveryNamespace)).setText(
 				oldNickname));
 		sendElement(root);
 	}

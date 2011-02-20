@@ -22,11 +22,11 @@ package de.starletp9.BroadChat;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import de.starletp9.BroadChat.Backends.DirektBackend;
+import de.starletp9.BroadChat.Backends.DirectBackend;
 
-public class StartSimpleGUIWithDirektBackend {
+public class StartSimpleGUIWithDirectBackend {
 	public static void main(String[] args) throws UnknownHostException, IOException {
-		SimpleGUI.b = new DirektBackend(new SimpleGUI());
+		SimpleGUI.b = new DirectBackend(new SimpleGUI());
 		SimpleGUI.init();
 	}
 }

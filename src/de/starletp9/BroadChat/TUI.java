@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import de.starletp9.BroadChat.Backends.DirektBackend;
+import de.starletp9.BroadChat.Backends.DirectBackend;
 
 public class TUI extends UI {
 	private Backend b;
@@ -47,7 +47,7 @@ public class TUI extends UI {
 		final TUI tui = new TUI();
 		System.out.print("Nickname: ");
 		tui.nickname = c.readLine();
-		Backend b = new DirektBackend(tui);
+		Backend b = new DirectBackend(tui);
 		tui.b = b;
 		Thread t = new Thread(new Runnable() {
 			@Override

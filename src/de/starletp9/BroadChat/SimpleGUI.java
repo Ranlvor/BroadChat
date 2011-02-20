@@ -48,7 +48,7 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import de.starletp9.BroadChat.Backends.DirektBackendXMLStrings;
+import de.starletp9.BroadChat.Backends.DirectBackendXMLStrings;
 
 public class SimpleGUI extends UI {
 	public static JTabbedPane tabbedPane;
@@ -149,7 +149,7 @@ public class SimpleGUI extends UI {
 				roomName.setText("");
 			}
 		});
-		createNewRoomTab(DirektBackendXMLStrings.defaultRoomName);
+		createNewRoomTab(DirectBackendXMLStrings.defaultRoomName);
 		tabbedPane.setSelectedIndex(1);
 		JSplitPane p = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		p.add(tabbedPane);
@@ -303,12 +303,12 @@ public class SimpleGUI extends UI {
 	}
 
 	public void discoveryClientLeft(String nickname) {
-		rooms.get(DirektBackendXMLStrings.defaultRoomName).chatText.append("\n" + nickname + " hat seinen Client beendet.");
-		update(DirektBackendXMLStrings.defaultRoomName);
+		rooms.get(DirectBackendXMLStrings.defaultRoomName).chatText.append("\n" + nickname + " hat seinen Client beendet.");
+		update(DirectBackendXMLStrings.defaultRoomName);
 	}
 
 	public void nicknameChanged(String oldNickname, String newNickname) {
-		rooms.get(DirektBackendXMLStrings.defaultRoomName).chatText.append("\n" + oldNickname + " hat seinen Namen in \"" + newNickname + "\" geändert.");
-		update(DirektBackendXMLStrings.defaultRoomName);
+		rooms.get(DirectBackendXMLStrings.defaultRoomName).chatText.append("\n" + oldNickname + " hat seinen Namen in \"" + newNickname + "\" geändert.");
+		update(DirectBackendXMLStrings.defaultRoomName);
 	}
 }

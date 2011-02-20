@@ -26,7 +26,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import de.starletp9.BroadChat.Backend;
-import de.starletp9.BroadChat.Backends.DirektBackend;
+import de.starletp9.BroadChat.Backends.DirectBackend;
 
 public class ListenThread implements Runnable {
 
@@ -38,7 +38,7 @@ public class ListenThread implements Runnable {
 		ListenThread t = new ListenThread();
 		t.ui = new TCPUserInterface();
 		try {
-			t.b = new DirektBackend(t.ui);
+			t.b = new DirectBackend(t.ui);
 			new Thread(t).start();
 			t.b.reciveLoop();
 		} catch (SocketException e) {

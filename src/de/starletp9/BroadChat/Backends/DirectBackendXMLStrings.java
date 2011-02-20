@@ -19,7 +19,7 @@
 
 package de.starletp9.BroadChat.Backends;
 
-public class DirektBackendXMLStrings {
+public class DirectBackendXMLStrings {
 	public static final String version = "version";
 
 	public static final String messageRootElement = "ChatMessage";
