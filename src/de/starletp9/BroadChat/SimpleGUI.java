@@ -194,7 +194,7 @@ public class SimpleGUI extends UI {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == 17) {
+				if (e.getKeyCode() == 18) {
 					int newIndex = tabbedPane.getSelectedIndex() + 1;
 					if (newIndex >= tabbedPane.getComponentCount())
 						newIndex = 1;
